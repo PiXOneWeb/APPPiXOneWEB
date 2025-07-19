@@ -146,6 +146,59 @@
       margin: 0 auto;
     }
 
+    /* مودال سوال */
+    #modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      direction: rtl;
+    }
+    #modal > div {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      font-family: sans-serif;
+    }
+    #modal p {
+      margin-bottom: 12px;
+      font-size: 1.1rem;
+    }
+    #modal input[type="text"] {
+      width: 80%;
+      padding: 8px;
+      margin-bottom: 12px;
+      font-size: 1rem;
+    }
+    #modal button {
+      padding: 6px 12px;
+      margin: 0 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+    }
+    #modal-ok {
+      background-color: #007bff;
+      color: white;
+    }
+    #modal-cancel {
+      background-color: #bbb;
+      color: #333;
+    }
+    #modal-ok:hover {
+      background-color: #0056b3;
+    }
+    #modal-cancel:hover {
+      background-color: #999;
+    }
   </style>
 </head>
 <body>
@@ -183,252 +236,282 @@
     <button class="toolbar-button" id="btn-add-element">افزودن المان جدید</button>
   </div>
 
+  <!-- مودال سوال -->
+  <div id="modal">
+    <div>
+      <p id="modal-question">سوال</p>
+      <input type="text" id="modal-input" />
+      <br />
+      <button id="modal-ok">تأیید</button>
+      <button id="modal-cancel">انصراف</button>
+    </div>
+  </div>
+
   <script>
     const appArea = document.getElementById("app-area");
 
-    // کمک‌کننده کشیدن و جابجایی المان‌ها
-    function makeDraggable(el) {
-      el.setAttribute('draggable', true);
-      el.addEventListener('dragstart', () => {
-        el.classList.add('dragging');
-      });
-      el.addEventListener('dragend', () => {
-        el.classList.remove('dragging');
-      });
-    }
+    // مودال سوال
+    const modal = document.getElementById("modal");
+    const modalQuestion = document.getElementById("modal-question");
+    const modalInput = document.getElementById("modal-input");
+    const modalOk = document.getElementById("modal-ok");
+    const modalCancel = document.getElementById("modal-cancel");
 
-    appArea.addEventListener('dragover', e => {
-      e.preventDefault();
-      const dragging = document.querySelector('.dragging');
-      if (!dragging) return;
-      const afterElement = getDragAfterElement(appArea, e.clientY);
-      if (afterElement == null) {
-        appArea.appendChild(dragging);
-      } else {
-        appArea.insertBefore(dragging, afterElement);
-      }
-    });
+    function askQuestion(questionText) {
+      return new Promise((resolve) => {
+        modalQuestion.textContent = questionText;
+        modalInput.value = "";
+        modal.style.display = "flex";
+        modalInput.focus();
 
-    function getDragAfterElement(container, y) {
-      const draggableElements = [...container.querySelectorAll('.element:not(.dragging)')];
-      return draggableElements.reduce((closest, child) => {
-        const box = child.getBoundingClientRect();
-        const offset = y - box.top - box.height / 2;
-        if (offset < 0 && offset > closest.offset) {
-          return { offset: offset, element: child }
-        } else {
-          return closest;
+        function cleanUp() {
+          modal.style.display = "none";
+          modalOk.removeEventListener("click", onOk);
+          modalCancel.removeEventListener("click", onCancel);
+          modalInput.removeEventListener("keydown", onKeyDown);
         }
-      }, { offset: Number.NEGATIVE_INFINITY }).element;
+
+        function onOk() {
+          const val = modalInput.value.trim();
+          cleanUp();
+          resolve(val || null);
+        }
+
+        function onCancel() {
+          cleanUp();
+          resolve(null);
+        }
+
+        function onKeyDown(e) {
+          if (e.key === "Enter") onOk();
+          else if (e.key === "Escape") onCancel();
+        }
+
+        modalOk.addEventListener("click", onOk);
+        modalCancel.addEventListener("click", onCancel);
+        modalInput.addEventListener("keydown", onKeyDown);
+      });
     }
 
-    // دکمه‌های اصلی - افزودن متن
-    document.getElementById("btn-text").addEventListener("click", () => {
-      const text = prompt("متن مورد نظر را وارد کنید:");
+    // تابع ساخت دکمه درون app-area که قابلیت کشیدن داشته باشد
+    function makeDraggable(element) {
+      let offsetX, offsetY, dragging = false;
+
+      element.style.position = "relative";
+
+      element.addEventListener("mousedown", (e) => {
+        dragging = true;
+        offsetX = e.clientX - element.offsetLeft;
+        offsetY = e.clientY - element.offsetTop;
+        element.style.zIndex = 999;
+        element.style.cursor = "grabbing";
+      });
+
+      document.addEventListener("mouseup", () => {
+        dragging = false;
+        element.style.zIndex = "";
+        element.style.cursor = "grab";
+      });
+
+      document.addEventListener("mousemove", (e) => {
+        if (dragging) {
+          let x = e.clientX - offsetX;
+          let y = e.clientY - offsetY;
+          // محدودیت برای نریختن از اپ ایریا (اختیاری)
+          if (x < 0) x = 0;
+          if (y < 0) y = 0;
+          if (x > appArea.clientWidth - element.offsetWidth) x = appArea.clientWidth - element.offsetWidth;
+          if (y > appArea.clientHeight - element.offsetHeight) y = appArea.clientHeight - element.offsetHeight;
+          element.style.position = "absolute";
+          element.style.left = x + "px";
+          element.style.top = y + "px";
+        }
+      });
+
+      element.style.cursor = "grab";
+    }
+
+    // مدیریت دکمه ها با مودال سوال
+
+    document.getElementById("btn-text").addEventListener("click", async () => {
+      const text = await askQuestion("متن مورد نظر را وارد کنید:");
       if (text) {
         const div = document.createElement("div");
         div.className = "element user-text";
         div.textContent = text;
         makeDraggable(div);
-        appArea.prepend(div);  // اضافه شدن به سمت چپ بالا (شروع)
-      }
-    });
-
-    // افزودن دکمه ساده
-    document.getElementById("btn-button").addEventListener("click", () => {
-      const label = prompt("متن دکمه را وارد کنید:");
-      if (label) {
-        const div = document.createElement("div");
-        div.className = "element";
-        const btn = document.createElement("button");
-        btn.className = "user-button";
-        btn.textContent = label;
-        div.appendChild(btn);
-        makeDraggable(div);
         appArea.prepend(div);
       }
     });
 
-    // افزودن عکس
-    document.getElementById("btn-image").addEventListener("click", () => {
-      const url = prompt("لینک تصویر را وارد کنید:");
+    document.getElementById("btn-button").addEventListener("click", async () => {
+      const text = await askQuestion("متن دکمه را وارد کنید:");
+      if (text) {
+        const btn = document.createElement("button");
+        btn.className = "element user-button";
+        btn.textContent = text;
+        makeDraggable(btn);
+        appArea.prepend(btn);
+      }
+    });
+
+    document.getElementById("btn-image").addEventListener("click", async () => {
+      const url = await askQuestion("لینک عکس را وارد کنید:");
       if (url) {
-        const div = document.createElement("div");
-        div.className = "element";
         const img = document.createElement("img");
+        img.className = "element user-image";
         img.src = url;
         img.alt = "عکس کاربر";
-        img.className = "user-image";
-        div.appendChild(img);
-        makeDraggable(div);
-        appArea.prepend(div);
+        makeDraggable(img);
+        appArea.prepend(img);
       }
     });
 
-    // دکمه تغییر رنگ صفحه
-    document.getElementById("btn-change-bg").addEventListener("click", () => {
-      const colors = ["#ffffff", "#f0f8ff", "#faebd7", "#e6e6fa", "#fffacd", "#d1ffd6", "#ffe4e1", "#d3d3d3"];
-      const currentColor = document.body.style.backgroundColor;
-      let idx = colors.indexOf(currentColor);
-      idx = (idx + 1) % colors.length;
-      document.body.style.backgroundColor = colors[idx];
+    document.getElementById("btn-change-bg").addEventListener("click", async () => {
+      const color = await askQuestion("رنگ پس‌زمینه صفحه را وارد کنید (مثلا #f0f0f0 یا red):");
+      if (color) {
+        document.body.style.backgroundColor = color;
+      }
     });
 
-    // دکمه نمایش/مخفی کردن متن نمونه
-    let sampleTextDiv = null;
     document.getElementById("btn-toggle-text").addEventListener("click", () => {
-      if (!sampleTextDiv) {
-        sampleTextDiv = document.createElement("div");
-        sampleTextDiv.textContent = "این یک متن نمونه است.";
-        sampleTextDiv.className = "element user-text";
-        makeDraggable(sampleTextDiv);
-        appArea.prepend(sampleTextDiv);
-      } else {
-        sampleTextDiv.style.display = sampleTextDiv.style.display === "none" ? "block" : "none";
-      }
-    });
-
-    // دکمه کپی متن نمونه
-    document.getElementById("btn-copy").addEventListener("click", () => {
-      const textToCopy = "این متن نمونه برای کپی کردن است.";
-      navigator.clipboard.writeText(textToCopy).then(() => {
-        alert("متن نمونه کپی شد!");
-      }).catch(() => {
-        alert("کپی موفق نبود.");
+      // نمایش/مخفی کردن تمام متن‌ها
+      const texts = appArea.querySelectorAll(".user-text");
+      texts.forEach(t => {
+        t.style.display = (t.style.display === "none") ? "block" : "none";
       });
     });
 
-    // دکمه باز کردن لینک
-    document.getElementById("btn-open-link").addEventListener("click", () => {
-      const url = prompt("لینک را وارد کنید:");
-      if (url) {
-        window.open(url, "_blank");
-      }
-    });
-
-    // دکمه شمارشگر
-    let counter = 0;
-    let counterDiv = null;
-    document.getElementById("btn-counter").addEventListener("click", () => {
-      if (!counterDiv) {
-        counterDiv = document.createElement("div");
-        counterDiv.className = "element";
-        const btn = document.createElement("button");
-        btn.className = "user-button";
-        btn.textContent = "شمارشگر: 0";
-        btn.addEventListener("click", () => {
-          counter++;
-          btn.textContent = "شمارشگر: " + counter;
+    document.getElementById("btn-copy").addEventListener("click", async () => {
+      const sample = await askQuestion("متنی برای کپی کردن وارد کنید:");
+      if (sample) {
+        navigator.clipboard.writeText(sample).then(() => {
+          alert("متن کپی شد!");
+        }).catch(() => {
+          alert("امکان کپی وجود ندارد!");
         });
-        counterDiv.appendChild(btn);
-        makeDraggable(counterDiv);
-        appArea.prepend(counterDiv);
-      } else {
-        alert("شمارشگر قبلا اضافه شده.");
       }
     });
 
-    // دکمه تغییر تصویر
-    let imgDiv = null;
-    const images = [
-      "https://picsum.photos/200/150?1",
-      "https://picsum.photos/200/150?2",
-      "https://picsum.photos/200/150?3",
-    ];
-    let imgIndex = 0;
-    document.getElementById("btn-change-img").addEventListener("click", () => {
-      if (!imgDiv) {
-        imgDiv = document.createElement("div");
-        imgDiv.className = "element";
-        const img = document.createElement("img");
-        img.src = images[imgIndex];
-        img.className = "user-image";
-        imgDiv.appendChild(img);
-        makeDraggable(imgDiv);
-        appArea.prepend(imgDiv);
-      } else {
-        imgIndex = (imgIndex + 1) % images.length;
-        const img = imgDiv.querySelector("img");
-        img.src = images[imgIndex];
+    document.getElementById("btn-open-link").addEventListener("click", async () => {
+      const link = await askQuestion("لینک را وارد کنید:");
+      if (link) {
+        window.open(link, "_blank");
       }
     });
 
-    // دکمه پخش صدا
-    document.getElementById("btn-play-sound").addEventListener("click", () => {
-      const audio = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3");
-      audio.play();
+    document.getElementById("btn-counter").addEventListener("click", () => {
+      let count = 0;
+      const div = document.createElement("div");
+      div.className = "element user-text";
+      div.textContent = `شمارش: ${count}`;
+      makeDraggable(div);
+
+      div.addEventListener("click", () => {
+        count++;
+        div.textContent = `شمارش: ${count}`;
+      });
+
+      appArea.prepend(div);
     });
 
-    // دکمه تنظیمات - نمونه نمایش هشدار
+    document.getElementById("btn-change-img").addEventListener("click", async () => {
+      const url = await askQuestion("لینک تصویر جدید را وارد کنید:");
+      if (url) {
+        const imgs = appArea.querySelectorAll(".user-image");
+        if (imgs.length === 0) {
+          alert("ابتدا یک عکس اضافه کنید.");
+          return;
+        }
+        imgs.forEach(img => img.src = url);
+      }
+    });
+
+    document.getElementById("btn-play-sound").addEventListener("click", async () => {
+      const url = await askQuestion("لینک فایل صوتی را وارد کنید:");
+      if (url) {
+        const audio = new Audio(url);
+        audio.play().catch(() => alert("خطا در پخش صدا"));
+      }
+    });
+
     document.getElementById("btn-settings").addEventListener("click", () => {
-      alert("صفحه تنظیمات (نمونه)");
+      alert("صفحه تنظیمات در حال توسعه است.");
     });
 
-    // دکمه ارسال فرم - نمونه
     document.getElementById("btn-submit").addEventListener("click", () => {
-      alert("فرم ارسال شد (نمونه)");
+      alert("فرم ارسال شد (نمونه).");
     });
 
-    // دکمه تایید/لغو - نمونه
-    document.getElementById("btn-confirm").addEventListener("click", () => {
-      if (confirm("آیا مطمئن هستید؟")) {
-        alert("تایید شد");
-      } else {
-        alert("لغو شد");
+    document.getElementById("btn-confirm").addEventListener("click", async () => {
+      const answer = confirm("آیا مطمئن هستید؟");
+      alert(answer ? "تایید شد." : "لغو شد.");
+    });
+
+    document.getElementById("btn-change-font").addEventListener("click", async () => {
+      const font = await askQuestion("نام فونت را وارد کنید (مثلا Arial, 'Times New Roman'):");
+      if (font) {
+        appArea.style.fontFamily = font;
       }
     });
 
-    // دکمه تغییر فونت
-    let fontIndex = 0;
-    const fonts = ["Tahoma, sans-serif", "Courier New, monospace", "Arial, sans-serif", "Vazirmatn, sans-serif"];
-    document.getElementById("btn-change-font").addEventListener("click", () => {
-      fontIndex = (fontIndex + 1) % fonts.length;
-      document.body.style.fontFamily = fonts[fontIndex];
-    });
-
-    // دکمه باز/بسته منو (فعال/غیرفعال کردن نوار پایین)
-    let toolbarVisible = true;
     document.getElementById("btn-toggle-menu").addEventListener("click", () => {
-      toolbarVisible = !toolbarVisible;
-      document.getElementById("toolbar").style.display = toolbarVisible ? "flex" : "none";
+      const toolbar = document.getElementById("toolbar");
+      toolbar.style.display = (toolbar.style.display === "none") ? "flex" : "none";
     });
 
-    // دکمه بالا برو
     document.getElementById("btn-scroll-top").addEventListener("click", () => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.scrollTo({top: 0, behavior: 'smooth'});
     });
 
-    // دکمه حالت تاریک
-    let darkMode = false;
     document.getElementById("btn-dark-mode").addEventListener("click", () => {
-      darkMode = !darkMode;
-      if (darkMode) {
-        document.body.style.backgroundColor = "#121212";
-        document.body.style.color = "#eee";
-        document.querySelector("#app-area").style.backgroundColor = "#222";
+      if (document.body.style.backgroundColor === 'black') {
+        document.body.style.backgroundColor = '#fff';
+        document.body.style.color = '#000';
       } else {
-        document.body.style.backgroundColor = "#fff";
-        document.body.style.color = "#000";
-        document.querySelector("#app-area").style.backgroundColor = "#e6f0ff";
+        document.body.style.backgroundColor = 'black';
+        document.body.style.color = '#fff';
       }
     });
 
-    // دکمه افزودن المان جدید (نمونه اضافه کردن متن)
-    document.getElementById("btn-add-element").addEventListener("click", () => {
-      const newEl = document.createElement("div");
-      newEl.className = "element user-text";
-      newEl.textContent = "المان جدید";
-      makeDraggable(newEl);
-      appArea.prepend(newEl);
+    document.getElementById("btn-add-element").addEventListener("click", async () => {
+      const type = await askQuestion("نوع المان را انتخاب کنید (text, button, image):");
+      if (!type) return;
+
+      if (type.toLowerCase() === "text") {
+        const text = await askQuestion("متن مورد نظر را وارد کنید:");
+        if (text) {
+          const div = document.createElement("div");
+          div.className = "element user-text";
+          div.textContent = text;
+          makeDraggable(div);
+          appArea.prepend(div);
+        }
+      } else if (type.toLowerCase() === "button") {
+        const text = await askQuestion("متن دکمه را وارد کنید:");
+        if (text) {
+          const btn = document.createElement("button");
+          btn.className = "element user-button";
+          btn.textContent = text;
+          makeDraggable(btn);
+          appArea.prepend(btn);
+        }
+      } else if (type.toLowerCase() === "image") {
+        const url = await askQuestion("لینک عکس را وارد کنید:");
+        if (url) {
+          const img = document.createElement("img");
+          img.className = "element user-image";
+          img.src = url;
+          img.alt = "عکس کاربر";
+          makeDraggable(img);
+          appArea.prepend(img);
+        }
+      } else {
+        alert("نوع نامعتبر!");
+      }
     });
 
-    // لینک های دکمه های بالا:
-    document.getElementById("buy-plus-btn").onclick = () => {
-      window.location.href = "by.html";
-    };
-    document.getElementById("build-app-btn").onclick = () => {
-      window.location.href = "menu.html";
-    };
   </script>
+
 </body>
 </html>
