@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>خرید پلاس</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      direction: rtl;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      color: #ff5722;
+    }
+    .price-list {
+      max-width: 400px;
+      margin: 20px auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+    .price-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 1.1rem;
+    }
+    .price-item:last-child {
+      border-bottom: none;
+    }
+    .buy-btn {
+      display: block;
+      width: 100%;
+      margin-top: 30px;
+      padding: 15px 0;
+      font-size: 1.2rem;
+      background-color: #ff5722;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+    .buy-btn:hover {
+      background-color: #e64a19;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>خرید پلاس</h1>
+
+  <div class="price-list">
+    <div class="price-item"><span>یک ماهه</span><span>120,000 تومان</span></div>
+    <div class="price-item"><span>سه ماهه</span><span>210,000 تومان</span></div>
+    <div class="price-item"><span>چهار ماهه</span><span>410,000 تومان</span></div>
+
+    <button class="buy-btn" id="buy-btn">خرید و پرداخت</button>
+  </div>
+
+  <script>
+    document.getElementById('buy-btn').addEventListener('click', () => {
+      // این لینک پرداخت رو به لینک درگاه پرداخت واقعی تغییر بده
+      window.location.href = 'https://reymit.ir/iranbomber';
+    });
+  </script>
+
+</body>
+</html>

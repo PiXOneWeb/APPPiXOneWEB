@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>در حال بارگذاری</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: #87CEEB;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: sans-serif;
+    }
+
+    .loading-text {
+      color: white;
+      font-size: 2.4rem;
+      animation: blink 1.2s infinite;
+      text-align: center;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .version {
+      position: absolute;
+      bottom: 25px;
+      font-size: 1.1rem;
+      color: white;
+      opacity: 0.9;
+    }
+  </style>
+
+  <script>
+    // تغییر مسیر پس از ۳ ثانیه
+    setTimeout(function() {
+      window.location.href = "home.html"; // آدرس صفحه مقصد را اینجا بگذار
+    }, 3000);
+  </script>
+</head>
+<body>
+  <div class="loading-text">PiXOne</div>
+  <div class="version">نسخه 1.0.0</div>
+</body>
+</html>

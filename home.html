@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>سازنده برنامه با دکمه‌های متنوع</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0 10px 60px;
+      font-family: sans-serif;
+      background-color: #fff;
+      direction: rtl;
+      transition: background-color 0.3s ease;
+    }
+
+    #top-buttons {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      gap: 12px;
+      z-index: 1000;
+    }
+
+    #top-buttons button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0,123,255,0.3);
+    }
+
+    #top-buttons button:hover {
+      background-color: #0056b3;
+    }
+
+    /* دکمه چشمک زن ساخت برنامه */
+    #build-app-btn {
+      animation: blink 1.5s infinite;
+    }
+    @keyframes blink {
+      0%, 50%, 100% {
+        background-color: #007BFF;
+        box-shadow: 0 4px 8px rgba(0,123,255,0.3);
+      }
+      25%, 75% {
+        background-color: #0056b3;
+        box-shadow: 0 6px 14px rgba(0,86,179,0.7);
+      }
+    }
+
+    #app-area {
+      margin-top: 60px;
+      padding-bottom: 60px;
+      min-height: 300px;
+      background-color: #e6f0ff; /* پس‌زمینه آبی روشن */
+      border-radius: 12px;
+      padding: 12px;
+      overflow-y: auto;
+      max-height: calc(100vh - 120px);
+    }
+
+    .bottom-bar {
+      background-color: #007BFF;
+      border-top: none;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      padding: 10px 5px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      gap: 6px;
+    }
+
+    .toolbar-button {
+      background-color: #0056b3;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      min-width: 80px;
+      user-select: none;
+      white-space: nowrap;
+      transition: background-color 0.3s ease;
+    }
+
+    .toolbar-button:hover {
+      background-color: #003d80;
+    }
+
+    .element {
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px dashed #004a99;
+      border-radius: 10px;
+      cursor: move;
+      background: #cde0ff;
+      user-select: none;
+      max-width: 280px;
+      word-break: break-word;
+    }
+
+    .user-button {
+      padding: 8px 16px;
+      background-color: #004a99;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .user-button:hover {
+      background-color: #003366;
+    }
+
+    .user-text {
+      font-size: 1rem;
+      color: #003366;
+    }
+
+    .user-image {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      display: block;
+      margin: 0 auto;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div id="top-buttons">
+    <button id="buy-plus-btn">خرید پلاس</button>
+    <button id="build-app-btn">ساخت برنامه</button>
+  </div>
+
+  <div id="app-area">
+    <!-- اینجا المان‌ها اضافه میشن -->
+  </div>
+
+  <div class="bottom-bar" id="toolbar">
+    <!-- دکمه‌های اصلی آبی -->
+    <button class="toolbar-button" id="btn-text">متن</button>
+    <button class="toolbar-button" id="btn-button">دکمه</button>
+    <button class="toolbar-button" id="btn-image">عکس</button>
+
+    <!-- دکمه‌های متنوع جدید -->
+    <button class="toolbar-button" id="btn-change-bg">تغییر رنگ صفحه</button>
+    <button class="toolbar-button" id="btn-toggle-text">نمایش/مخفی متن</button>
+    <button class="toolbar-button" id="btn-copy">کپی متن نمونه</button>
+    <button class="toolbar-button" id="btn-open-link">باز کردن لینک</button>
+    <button class="toolbar-button" id="btn-counter">شمارشگر</button>
+    <button class="toolbar-button" id="btn-change-img">تغییر تصویر</button>
+    <button class="toolbar-button" id="btn-play-sound">پخش صدا</button>
+    <button class="toolbar-button" id="btn-settings">تنظیمات</button>
+    <button class="toolbar-button" id="btn-submit">ارسال فرم</button>
+    <button class="toolbar-button" id="btn-confirm">تایید/لغو</button>
+    <button class="toolbar-button" id="btn-change-font">تغییر فونت</button>
+    <button class="toolbar-button" id="btn-toggle-menu">باز/بسته منو</button>
+    <button class="toolbar-button" id="btn-scroll-top">بالا برو</button>
+    <button class="toolbar-button" id="btn-dark-mode">حالت تاریک</button>
+    <button class="toolbar-button" id="btn-add-element">افزودن المان جدید</button>
+  </div>
+
+  <script>
+    const appArea = document.getElementById("app-area");
+
+    // کمک‌کننده کشیدن و جابجایی المان‌ها
+    function makeDraggable(el) {
+      el.setAttribute('draggable', true);
+      el.addEventListener('dragstart', () => {
+        el.classList.add('dragging');
+      });
+      el.addEventListener('dragend', () => {
+        el.classList.remove('dragging');
+      });
+    }
+
+    appArea.addEventListener('dragover', e => {
+      e.preventDefault();
+      const dragging = document.querySelector('.dragging');
+      if (!dragging) return;
+      const afterElement = getDragAfterElement(appArea, e.clientY);
+      if (afterElement == null) {
+        appArea.appendChild(dragging);
+      } else {
+        appArea.insertBefore(dragging, afterElement);
+      }
+    });
+
+    function getDragAfterElement(container, y) {
+      const draggableElements = [...container.querySelectorAll('.element:not(.dragging)')];
+      return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+          return { offset: offset, element: child }
+        } else {
+          return closest;
+        }
+      }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+
+    // دکمه‌های اصلی - افزودن متن
+    document.getElementById("btn-text").addEventListener("click", () => {
+      const text = prompt("متن مورد نظر را وارد کنید:");
+      if (text) {
+        const div = document.createElement("div");
+        div.className = "element user-text";
+        div.textContent = text;
+        makeDraggable(div);
+        appArea.prepend(div);  // اضافه شدن به سمت چپ بالا (شروع)
+      }
+    });
+
+    // افزودن دکمه ساده
+    document.getElementById("btn-button").addEventListener("click", () => {
+      const label = prompt("متن دکمه را وارد کنید:");
+      if (label) {
+        const div = document.createElement("div");
+        div.className = "element";
+        const btn = document.createElement("button");
+        btn.className = "user-button";
+        btn.textContent = label;
+        div.appendChild(btn);
+        makeDraggable(div);
+        appArea.prepend(div);
+      }
+    });
+
+    // افزودن عکس
+    document.getElementById("btn-image").addEventListener("click", () => {
+      const url = prompt("لینک تصویر را وارد کنید:");
+      if (url) {
+        const div = document.createElement("div");
+        div.className = "element";
+        const img = document.createElement("img");
+        img.src = url;
+        img.alt = "عکس کاربر";
+        img.className = "user-image";
+        div.appendChild(img);
+        makeDraggable(div);
+        appArea.prepend(div);
+      }
+    });
+
+    // دکمه تغییر رنگ صفحه
+    document.getElementById("btn-change-bg").addEventListener("click", () => {
+      const colors = ["#ffffff", "#f0f8ff", "#faebd7", "#e6e6fa", "#fffacd", "#d1ffd6", "#ffe4e1", "#d3d3d3"];
+      const currentColor = document.body.style.backgroundColor;
+      let idx = colors.indexOf(currentColor);
+      idx = (idx + 1) % colors.length;
+      document.body.style.backgroundColor = colors[idx];
+    });
+
+    // دکمه نمایش/مخفی کردن متن نمونه
+    let sampleTextDiv = null;
+    document.getElementById("btn-toggle-text").addEventListener("click", () => {
+      if (!sampleTextDiv) {
+        sampleTextDiv = document.createElement("div");
+        sampleTextDiv.textContent = "این یک متن نمونه است.";
+        sampleTextDiv.className = "element user-text";
+        makeDraggable(sampleTextDiv);
+        appArea.prepend(sampleTextDiv);
+      } else {
+        sampleTextDiv.style.display = sampleTextDiv.style.display === "none" ? "block" : "none";
+      }
+    });
+
+    // دکمه کپی متن نمونه
+    document.getElementById("btn-copy").addEventListener("click", () => {
+      const textToCopy = "این متن نمونه برای کپی کردن است.";
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        alert("متن نمونه کپی شد!");
+      }).catch(() => {
+        alert("کپی موفق نبود.");
+      });
+    });
+
+    // دکمه باز کردن لینک
+    document.getElementById("btn-open-link").addEventListener("click", () => {
+      const url = prompt("لینک را وارد کنید:");
+      if (url) {
+        window.open(url, "_blank");
+      }
+    });
+
+    // دکمه شمارشگر
+    let counter = 0;
+    let counterDiv = null;
+    document.getElementById("btn-counter").addEventListener("click", () => {
+      if (!counterDiv) {
+        counterDiv = document.createElement("div");
+        counterDiv.className = "element";
+        const btn = document.createElement("button");
+        btn.className = "user-button";
+        btn.textContent = "شمارشگر: 0";
+        btn.addEventListener("click", () => {
+          counter++;
+          btn.textContent = "شمارشگر: " + counter;
+        });
+        counterDiv.appendChild(btn);
+        makeDraggable(counterDiv);
+        appArea.prepend(counterDiv);
+      } else {
+        alert("شمارشگر قبلا اضافه شده.");
+      }
+    });
+
+    // دکمه تغییر تصویر
+    let imgDiv = null;
+    const images = [
+      "https://picsum.photos/200/150?1",
+      "https://picsum.photos/200/150?2",
+      "https://picsum.photos/200/150?3",
+    ];
+    let imgIndex = 0;
+    document.getElementById("btn-change-img").addEventListener("click", () => {
+      if (!imgDiv) {
+        imgDiv = document.createElement("div");
+        imgDiv.className = "element";
+        const img = document.createElement("img");
+        img.src = images[imgIndex];
+        img.className = "user-image";
+        imgDiv.appendChild(img);
+        makeDraggable(imgDiv);
+        appArea.prepend(imgDiv);
+      } else {
+        imgIndex = (imgIndex + 1) % images.length;
+        const img = imgDiv.querySelector("img");
+        img.src = images[imgIndex];
+      }
+    });
+
+    // دکمه پخش صدا
+    document.getElementById("btn-play-sound").addEventListener("click", () => {
+      const audio = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3");
+      audio.play();
+    });
+
+    // دکمه تنظیمات - نمونه نمایش هشدار
+    document.getElementById("btn-settings").addEventListener("click", () => {
+      alert("صفحه تنظیمات (نمونه)");
+    });
+
+    // دکمه ارسال فرم - نمونه
+    document.getElementById("btn-submit").addEventListener("click", () => {
+      alert("فرم ارسال شد (نمونه)");
+    });
+
+    // دکمه تایید/لغو - نمونه
+    document.getElementById("btn-confirm").addEventListener("click", () => {
+      if (confirm("آیا مطمئن هستید؟")) {
+        alert("تایید شد");
+      } else {
+        alert("لغو شد");
+      }
+    });
+
+    // دکمه تغییر فونت
+    let fontIndex = 0;
+    const fonts = ["Tahoma, sans-serif", "Courier New, monospace", "Arial, sans-serif", "Vazirmatn, sans-serif"];
+    document.getElementById("btn-change-font").addEventListener("click", () => {
+      fontIndex = (fontIndex + 1) % fonts.length;
+      document.body.style.fontFamily = fonts[fontIndex];
+    });
+
+    // دکمه باز/بسته منو (فعال/غیرفعال کردن نوار پایین)
+    let toolbarVisible = true;
+    document.getElementById("btn-toggle-menu").addEventListener("click", () => {
+      toolbarVisible = !toolbarVisible;
+      document.getElementById("toolbar").style.display = toolbarVisible ? "flex" : "none";
+    });
+
+    // دکمه بالا برو
+    document.getElementById("btn-scroll-top").addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    // دکمه حالت تاریک
+    let darkMode = false;
+    document.getElementById("btn-dark-mode").addEventListener("click", () => {
+      darkMode = !darkMode;
+      if (darkMode) {
+        document.body.style.backgroundColor = "#121212";
+        document.body.style.color = "#eee";
+        document.querySelector("#app-area").style.backgroundColor = "#222";
+      } else {
+        document.body.style.backgroundColor = "#fff";
+        document.body.style.color = "#000";
+        document.querySelector("#app-area").style.backgroundColor = "#e6f0ff";
+      }
+    });
+
+    // دکمه افزودن المان جدید (نمونه اضافه کردن متن)
+    document.getElementById("btn-add-element").addEventListener("click", () => {
+      const newEl = document.createElement("div");
+      newEl.className = "element user-text";
+      newEl.textContent = "المان جدید";
+      makeDraggable(newEl);
+      appArea.prepend(newEl);
+    });
+
+    // لینک های دکمه های بالا:
+    document.getElementById("buy-plus-btn").onclick = () => {
+      window.location.href = "by.html";
+    };
+    document.getElementById("build-app-btn").onclick = () => {
+      window.location.href = "menu.html";
+    };
+  </script>
+</body>
+</html>
