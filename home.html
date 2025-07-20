@@ -159,35 +159,41 @@
       width: 90%;
       max-width: 400px;
       text-align: center;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
     }
     #modal p {
-      margin-bottom: 12px;
-      font-size: 1.1rem;
+      margin-bottom: 20px;
+      font-size: 1.2rem;
+      color: #007BFF;
+      font-weight: bold;
     }
     #modal input[type="text"] {
       width: 80%;
       padding: 8px;
       margin-bottom: 12px;
       font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
     }
     #modal button {
-      padding: 6px 12px;
-      margin: 0 6px;
+      padding: 8px 16px;
+      margin: 0 10px;
       font-size: 1rem;
       cursor: pointer;
       border: none;
       border-radius: 6px;
+      transition: background-color 0.3s ease;
     }
     #modal-ok {
       background-color: #007bff;
       color: white;
     }
+    #modal-ok:hover {
+      background-color: #0056b3;
+    }
     #modal-cancel {
       background-color: #bbb;
       color: #333;
-    }
-    #modal-ok:hover {
-      background-color: #0056b3;
     }
     #modal-cancel:hover {
       background-color: #999;
@@ -231,14 +237,15 @@
   <div id="modal">
     <div>
       <p id="modal-question">سوال</p>
-      <input type="text" id="modal-input" />
+      <input type="text" id="modal-input" style="display:none" />
       <br />
       <button id="modal-ok">تأیید</button>
-      <button id="modal-cancel">انصراف</button>
+      <button id="modal-cancel" style="display:none">انصراف</button>
     </div>
   </div>
 
   <script>
+    // دکمه‌های بالا
     document.getElementById("buy-plus-btn").addEventListener("click", () => {
       window.location.href = "by.html";
     });
@@ -247,11 +254,42 @@
       window.location.href = "menu.html";
     });
 
-    // پیام برای دکمه‌های قفل‌شده
+    // نمایش مدال پیام
+    function showModal(message) {
+      const modal = document.getElementById("modal");
+      const question = document.getElementById("modal-question");
+      const input = document.getElementById("modal-input");
+      const okBtn = document.getElementById("modal-ok");
+      const cancelBtn = document.getElementById("modal-cancel");
+
+      question.textContent = message;
+      input.style.display = "none";
+      cancelBtn.style.display = "none";
+      okBtn.style.display = "inline-block";
+
+      modal.style.display = "flex";
+
+      // بستن مدال با کلیک روی تأیید
+      okBtn.onclick = () => {
+        modal.style.display = "none";
+      };
+
+      // جلوگیری از چند بار تعریف مجدد رویداد
+      cancelBtn.onclick = null;
+    }
+
+    // دکمه‌های قفل‌شده
     document.querySelectorAll(".locked").forEach(btn => {
       btn.addEventListener("click", () => {
-        alert("این قابلیت فقط برای کاربران پلاس فعال است.");
+        showModal("این قابلیت فقط برای کاربران پلاس فعال است.");
       });
+    });
+
+    // بستن مدال با کلیک بیرون از پنجره
+    document.getElementById("modal").addEventListener("click", (e) => {
+      if (e.target.id === "modal") {
+        document.getElementById("modal").style.display = "none";
+      }
     });
   </script>
 
