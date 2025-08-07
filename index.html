@@ -1,52 +1,83 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>در حال بارگذاری</title>
+  <meta charset="UTF-8" />
+  <title>آپدیت با آیکون چرخشی و آهنگ</title>
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet" />
   <style>
     body, html {
-      margin: 0;
-      padding: 0;
       height: 100%;
-      background-color: #87CEEB;
+      margin: 0;
+      font-family: 'Vazir', sans-serif;
+      direction: rtl;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      font-family: sans-serif;
+      background: #f9f9f9;
     }
-
-    .loading-text {
+    .update-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 50px;
+      color: #2c3e50;
+      margin-bottom: 30px;
+      display: none; /* اول پیام مخفی باشه */
+    }
+    /* آیکون چرخشی */
+    .spinner {
+      border: 5px solid #ddd;
+      border-top: 5px solid #2980b9;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg);}
+      100% { transform: rotate(360deg);}
+    }
+    button {
+      font-size: 50px;
+      padding: 10px 20px;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      background-color: #2980b9;
       color: white;
-      font-size: 2.4rem;
-      animation: blink 1.2s infinite;
-      text-align: center;
+      transition: background-color 0.3s ease;
     }
-
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
-    }
-
-    .version {
-      position: absolute;
-      bottom: 25px;
-      font-size: 1.1rem;
-      color: white;
-      opacity: 0.9;
+    button:hover {
+      background-color: #1c5980;
     }
   </style>
-
-  <script>
-    // تغییر مسیر پس از ۳ ثانیه
-    setTimeout(function() {
-      window.location.href = "home.html"; // آدرس صفحه مقصد را اینجا بگذار
-    }, 3000);
-  </script>
 </head>
 <body>
-  <div class="loading-text">PiXOne</div>
-  <div class="version">نسخه 1.0.0</div>
+
+<button id="start-btn">شروع آپدیت</button>
+
+<div class="update-container" id="update-container">
+  <div class="spinner"></div>
+  برنامه و سایت دارد آپدیت می‌شود
+</div>
+
+<audio id="audio" loop>
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg" />
+  مرورگر شما از پخش صدا پشتیبانی نمی‌کند.
+</audio>
+
+<script>
+  const btn = document.getElementById('start-btn');
+  const audio = document.getElementById('audio');
+  const updateContainer = document.getElementById('update-container');
+
+  btn.addEventListener('click', () => {
+    audio.play();
+    btn.style.display = 'none';
+    updateContainer.style.display = 'flex';
+  });
+</script>
+
 </body>
 </html>
